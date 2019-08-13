@@ -24,13 +24,18 @@ results_list = results_html_soup.find_all("li", class_="bottom_divider clearfix"
 movies_dictionary = {}
 for result in results_list:
     result_details = result.find("div", class_="details")
-    movie_name = result_details.a.text
-    ## TODO: Add movie year
-    # movie_year = result_details.find("span", class_="movie_year")
-    # movie_name_and_year = movie_name + " " + movie_year
+    movie_name = result_details.a.text.strip()
+    movie_year = result_details.find("span", class_="movie_year")
+    if movie_year == None:
+        movie_year == ""
+        movie_name_and_year = movie_name
+    else:
+        movie_year = movie_year.text.strip()
+        movie_name_and_year = movie_name + " " + movie_year
+
     movie_slug = result_details.a['href']
-    movies_dictionary[movie_name] = movie_slug
-    print(movie_name)
+    movies_dictionary[movie_name_and_year] = movie_slug
+    print(movie_name_and_year)
 
 driver.quit()
 
