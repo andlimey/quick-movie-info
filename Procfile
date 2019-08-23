@@ -1,1 +1,1 @@
-web: python quick-movie-info-bot
+web: python quick-movie-info-bot.py
