@@ -2,5 +2,4 @@ requests
 bs4
 selenium
 telegram
-collections
 dotenv
