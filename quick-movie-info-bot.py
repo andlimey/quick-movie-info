@@ -2,12 +2,10 @@ from telegram.ext import Updater, Filters
 from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from collections import OrderedDict
+from dotenv import load_dotenv
 import logging
 import movies_scraper
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-updater = Updater(token="")
-dispatcher = updater.dispatcher
+import os
 
 def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Hello. I am bot that gives bite-sized information regarding movies.\nType /info to find out how to use me!")
@@ -71,17 +69,42 @@ def build_menu(buttons,
         menu.append(footer_buttons)
     return menu
 
-# Adds handlers and register in the dispatcher.
-start_handler = CommandHandler("start", start)
-info_handler = CommandHandler("info", info)
-find_handler = CommandHandler("find", find)
-callback_handler = CallbackQueryHandler(search_movie_details)
-reply_handler = MessageHandler(Filters.text, reply)
-dispatcher.add_handler(start_handler)
-dispatcher.add_handler(info_handler)
-dispatcher.add_handler(find_handler)
-dispatcher.add_handler(callback_handler)
-dispatcher.add_handler(reply_handler)
+def main():
+    # Adds handlers and register in the dispatcher.
+    start_handler = CommandHandler("start", start)
+    info_handler = CommandHandler("info", info)
+    find_handler = CommandHandler("find", find)
+    callback_handler = CallbackQueryHandler(search_movie_details)
+    reply_handler = MessageHandler(Filters.text, reply)
+    dispatcher.add_handler(start_handler)
+    dispatcher.add_handler(info_handler)
+    dispatcher.add_handler(find_handler)
+    dispatcher.add_handler(callback_handler)
+    dispatcher.add_handler(reply_handler)
+    run(updater)
 
-updater.start_polling()
-updater.idle()
+# Used to load .env file
+load_dotenv()
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+TOKEN = os.getenv("TOKEN")
+MODE = os.getenv("MODE")
+updater = Updater(token=TOKEN)
+dispatcher = updater.dispatcher
+
+if MODE == "dev":
+    def run(updater):
+        updater.start_polling()
+        updater.idle()
+elif MODE == "prod":
+    def run(updater):
+        # Standard config if bot is hosted on heroku
+        PORT = int(os.environ.get('PORT', '8443'))
+        HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME")
+        updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
+        updater.bot.set_webhook("https://{}.herokuapp.com/{}".format(HEROKU_APP_NAME, TOKEN))
+        updater.idle()
+else:
+    logger.error("No mode specified")
+    sys.exit(1)
+
+main()

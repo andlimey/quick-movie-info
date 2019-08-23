@@ -5,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 
 def get_search_results(movie_title):
     # Creates an instance of Chrome and makes the request.
-    driver = webdriver.Chrome(r"C:\Users\Andy\Downloads\chromedriver.exe")
+    driver = webdriver.Chrome()
     driver.get("https://www.rottentomatoes.com/")
 
     # Searches for the search bar and enters the user's input.
@@ -87,4 +87,5 @@ def get_movie_info(movie_slug):
 # def main():
 #     movie_title = input("Enter Movie Name: ")
 #     movies_dictionary = get_search_results(movie_title)
-#     get_movie_info(movies_dictionary)
+
+# main()
