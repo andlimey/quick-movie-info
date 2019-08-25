@@ -9,12 +9,25 @@
     4. Tomatometer
     5. Audience Score
 
+## How to use the bot
+
+* Below is a list of commands that the bot will understand
+    * /start
+    image::img/start_command.png
+    * /info
+    image::img/info_command.png
+    * /find
+    image::img/find_command.png
+    *Upon selecting one of the buttons, the bot will return the movie information
+    image::img/results.png
+
 ## Information regarding the project
 
-* The application is deployed on Heroku
+* The application uses the python-telegram-bot library and is deployed on Heroku
     * requirements.txt file is used to specify dependencies
     * runtime.txt is used to specify the Python version to run
     * Procfile is used to specify the commands that are executed by the app on startup.
 
+* [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot)
 * [Heroku with Python](https://devcenter.heroku.com/articles/getting-started-with-python)
 * [Procfile](https://devcenter.heroku.com/articles/procfile)
