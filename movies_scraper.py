@@ -2,10 +2,22 @@ from requests import get
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import os
+import logging
 
 def get_search_results(movie_title):
     # Creates an instance of Chrome and makes the request.
-    driver = webdriver.Chrome()
+    MODE = os.getenv("MODE")
+    if MODE == "dev":
+        driver = webdriver.Chrome()
+    elif MODE == "prod":
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+
     driver.get("https://www.rottentomatoes.com/")
 
     # Searches for the search bar and enters the user's input.
