@@ -12,14 +12,22 @@
 ## How to use the bot
 
 * Below is a list of commands that the bot will understand
-    * /start
-    image::img/start_command.png
-    * /info
-    image::img/info_command.png
-    * /find
-    image::img/find_command.png
-    *Upon selecting one of the buttons, the bot will return the movie information
-    image::img/results.png
+
+    ### start
+    
+    ![/start](/img/start_command.png)
+    
+    ### info
+    
+    ![/info](/img/info_command.png)
+    
+    ### find
+    
+    ![/find](/img/find_command.png)
+    
+    ### Upon clicking one of the buttons, the bot will send the movie information.
+    
+    ![Results](/img/results.png)
 
 ## Information regarding the project
 
