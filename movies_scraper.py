@@ -82,7 +82,7 @@ def get_movie_info(movie_slug):
         audience_verified_ratings = "N.A"
     else:
         audience_score = audience_score.text.strip()
-        audience_verified_ratings = audience_ratings_div.strong.text[17:].strip()
+        audience_verified_ratings = audience_ratings_div.strong.text[13:].strip()
     
     info_dictionary = {}
     info_dictionary["url"] = url
