@@ -7,30 +7,38 @@ import logging
 import movies_scraper
 import os
 
-def start(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Hello. I am bot that gives bite-sized information regarding movies.\nType /info to find out how to use me!")
+START_MESSAGE = "Hello. I am bot that gives bite-sized information regarding movies.\nType /info to find out how to use me!"
+INFO_MESSAGE = "1. Type /find\n2. Enter movie name. E.g. /find Fast and Furious.\n3. Select the movie you're looking for."
+INCORRECT_COMMAND_MESSAGE = "Please use the /find command to search for movies"
+INCOMPLETE_FIND_COMMAND_MESSAGE = "Please input a movie name after /find"
 
-def info(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="1. Type /find\n2. Enter movie name. E.g. /find Fast and Furious.\n3. Select the movie you're looking for.")
+def start_command(bot, update):
+    bot.send_message(chat_id=update.message.chat_id, text=START_MESSAGE)
+
+def info_command(bot, update):
+    bot.send_message(chat_id=update.message.chat_id, text=INFO_MESSAGE)
 
 def reply(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Please use the /find command to search for movies")
+    bot.send_message(chat_id=update.message.chat_id, text=INCORRECT_COMMAND_MESSAGE)
 
-def find(bot, update):
+def find_command(bot, update):
     chat_id = update.message.chat_id
-    # We want the message after /find.
+    # Retrieves the message after /find
     user_message = update.message.text[5:].strip()
-    if user_message == "":
-        bot.send_message(chat_id=chat_id, text="Please input a movie name after /find")
+    if not user_message:
+        bot.send_message(chat_id=chat_id, text=INCOMPLETE_FIND_COMMAND_MESSAGE)
     else:
         bot.send_message(chat_id=chat_id, text="Your query is: {}".format(user_message))
         bot.send_message(chat_id=chat_id, text="Wait while we retrieve data...")
+
         movies_dictionary = get_movies_dictionary(user_message)
+        
         button_list = []
         for movie_name in movies_dictionary:
             movie_slug = movies_dictionary[movie_name]
             button_list.append(InlineKeyboardButton(movie_name, callback_data=movie_slug))
         reply_markup = InlineKeyboardMarkup(build_menu(button_list, n_cols=1))
+        
         bot.send_message(chat_id, text="Click on one of the movies below, or type /find to search for another movie.", reply_markup=reply_markup)
 
 def search_movie_details(bot, update):
@@ -51,6 +59,7 @@ def print_information(bot, update, info_dictionary):
     audience_score = info_dictionary["audience_score"]
     audience_verified_ratings = info_dictionary["audience_verified_ratings"]
     url = info_dictionary["url"]
+
     bot.send_message(chat_id=update.callback_query.message.chat_id, text="Title: {}".format(title))
     bot.send_message(chat_id=update.callback_query.message.chat_id, text="Synopsis: {}".format(movie_synopsis))
     bot.send_message(chat_id=update.callback_query.message.chat_id, text="Critics Consensus: {}".format(consensus))
@@ -70,26 +79,29 @@ def build_menu(buttons,
     return menu
 
 def main():
-    # Adds handlers and register in the dispatcher.
-    start_handler = CommandHandler("start", start)
-    info_handler = CommandHandler("info", info)
-    find_handler = CommandHandler("find", find)
+    start_handler = CommandHandler("start", start_command)
+    info_handler = CommandHandler("info", info_command)
+    find_handler = CommandHandler("find", find_command)
+
     callback_handler = CallbackQueryHandler(search_movie_details)
     reply_handler = MessageHandler(Filters.text, reply)
+    
+    # Registers the handlers in the dispatcher
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(info_handler)
     dispatcher.add_handler(find_handler)
     dispatcher.add_handler(callback_handler)
     dispatcher.add_handler(reply_handler)
+    
     run(updater)
 
-# Used to load .env file
+# Loads the .env file
 load_dotenv()
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 TOKEN = os.getenv("TOKEN")
 MODE = os.getenv("MODE")
 updater = Updater(token=TOKEN)
-dispatcher = updater.dispatcher
+dispatcher =  updater.dispatcher
 
 if MODE == "dev":
     def run(updater):
@@ -97,7 +109,7 @@ if MODE == "dev":
         updater.idle()
 elif MODE == "prod":
     def run(updater):
-        # Standard config if bot is hosted on heroku
+        # Standard configs if bot is hosted on heroku
         PORT = int(os.environ.get('PORT', '8443'))
         HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME")
         updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)

@@ -95,9 +95,3 @@ def get_movie_info(movie_slug):
     info_dictionary["audience_verified_ratings"] = audience_verified_ratings
 
     return info_dictionary
-
-# def main():
-#     movie_title = input("Enter Movie Name: ")
-#     movies_dictionary = get_search_results(movie_title)
-
-# main()
